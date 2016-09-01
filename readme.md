@@ -1,10 +1,14 @@
-# webvirtcloud on docker
+# WebVirtCloud on docker
+
+retspen's WebVirtCloud is a web interface to kvm virtualization and can be found on [github](https://github.com/retspen/webvirtcloud)
 
 ## persistent data
 
-To get persistent data (database, ssh key) you need to mount server side directories `/srv/webvirtcloud/data` and `/var/www/.ssh`.
+To get persistent data (database, ssh key) you need to mount container side directories `/srv/webvirtcloud/data` and `/var/www/.ssh` (i.e. `-v /srv/webvirtcloud/data:/srv/webvirtcloud/data`).
 
-Existing databases will be upgraded by webvirtclouds migrations, an existing ssh key will be used otherwise one will be created (4096bit RSA).
+- an existing database (`db.sqlite3`) will be used and upgraded by webvirtcloud's migrations
+- an existing ssh key will be used otherwise one will be created (4096 bit RSA)
+- warning: do not mount your ~/.ssh as key source - permissions will be updated to container needs!
 
 ## run container
 
@@ -22,7 +26,7 @@ docker run -d \
     -v /srv/webvirtcloud/data:/srv/webvirtcloud/data \
     -v /srv/webvirtcloud/ssh:/var/www/.ssh \
     --name webvirtcloud \
-    mplx/webvirtcloud:latest
+    mplx/docker-webvirtcloud:latest
 ```
 
 ### docker compose
@@ -30,7 +34,7 @@ docker run -d \
 version: '2'
 services:
   webvirtcloud:
-    image: mplx/webvirtcloud
+    image: mplx/docker-webvirtcloud
     ports:
       - "80:80"
       - "6080:6080"
