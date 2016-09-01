@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # fix database permissions
-chown www-data:www-data /srv/webvirtcloud/data/
+chown -R www-data:www-data /srv/webvirtcloud/data/
 
 # execute migrations
 /sbin/setuser www-data venv/bin/python manage.py migrate
@@ -17,6 +17,6 @@ cat /var/www/.ssh/id_rsa.pub
 echo ""
 
 # fix ssh permissions	
-chown www-data:www-data /var/www/.ssh/
+chown -R www-data:www-data /var/www/.ssh/
 chmod 0700 /var/www/.ssh
 chmod 0600 /var/www/.ssh/*
