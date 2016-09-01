@@ -2,10 +2,17 @@
 
 ## persistent data
 
-To get persistent data (database, ssh key) you need to mount server side directories `/srv/webvirtcloud/data` and `/var/www/.ssh`.  
+To get persistent data (database, ssh key) you need to mount server side directories `/srv/webvirtcloud/data` and `/var/www/.ssh`.
+
 Existing databases will be upgraded by webvirtclouds migrations, an existing ssh key will be used otherwise one will be created (4096bit RSA).
 
 ## run container
+
+### pull
+
+```bash
+docker pull mplx/docker-webvirtcloud
+```
 
 ### docker cli
 ```bash    
