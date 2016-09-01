@@ -42,3 +42,18 @@ services:
       - /srv/webvirtcloud/data:/srv/webvirtcloud/data
       - /srv/webvirtcloud/ssh:/var/www/.ssh
 ```
+
+## strict host checking
+
+Before adding a kvm target system ("Computes" > "SSH Connection") you have to add the public key to the target system and establish a test connection so the host key is added to `known_hosts` file. Failing to do so will result in error `Host key verification failed`.
+
+```bash
+docker exec -i -t <container> /sbin/setuser www-data ssh <user>@<fqdn>
+```
+
+If you don't care about strict host checking you might disable it by adding these settings to file `config` in your ssh target volume instead:
+
+```
+StrictHostKeyChecking=no
+UserKnownHostsFile=/dev/null 
+```
