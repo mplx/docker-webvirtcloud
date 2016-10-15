@@ -26,7 +26,7 @@ RUN apt-get update -qqy && \
 
 WORKDIR /srv
 
-ENV COMMITID=346b96b319f3a984f3f21f223cfe45d31488a00f
+ENV COMMITID=aa2a996e3f765ee0a3c593026d7b674f15ec9086
 
 RUN curl -L -o $COMMITID.zip https://github.com/retspen/webvirtcloud/archive/$COMMITID.zip && \
     unzip $COMMITID.zip && \
