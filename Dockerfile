@@ -2,7 +2,7 @@
 FROM phusion/baseimage:0.9.19
 
 MAINTAINER geki007
-MAINTAINER mplx
+MAINTAINER mplx <mplx+docker@donotreply.at>
 
 EXPOSE 80
 EXPOSE 6080
@@ -22,6 +22,8 @@ RUN apt-get update -qqy && \
     libsasl2-modules \
     unzip \
     curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     mkdir -p /srv
 
 WORKDIR /srv
@@ -54,6 +56,6 @@ RUN curl -L -o $COMMITID.zip https://github.com/retspen/webvirtcloud/archive/$CO
     cp conf/runit/novncd.sh /etc/service/novnc/run && \
     cp conf/runit/webvirtcloud.sh /etc/service/webvirtcloud/run && \
     sed -i '/cd \/srv\/webvirtcloud/a /bin/bash /srv/startinit.sh' /etc/service/webvirtcloud/run && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    rm -rf /tmp/* /var/tmp/*
 
 COPY startinit.sh /srv/startinit.sh
