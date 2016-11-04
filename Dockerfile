@@ -5,7 +5,6 @@ MAINTAINER geki007
 MAINTAINER mplx <mplx+docker@donotreply.at>
 
 EXPOSE 80
-EXPOSE 6080
 
 CMD ["/sbin/my_init"]
 
@@ -55,7 +54,14 @@ RUN curl -L -o $COMMITID.zip https://github.com/retspen/webvirtcloud/archive/$CO
     cp conf/runit/nginx-log-forwarder /etc/service/nginx-log-forwarder/run && \
     cp conf/runit/novncd.sh /etc/service/novnc/run && \
     cp conf/runit/webvirtcloud.sh /etc/service/webvirtcloud/run && \
-    sed -i '/cd \/srv\/webvirtcloud/a /bin/bash /srv/startinit.sh' /etc/service/webvirtcloud/run && \
     rm -rf /tmp/* /var/tmp/*
 
-COPY startinit.sh /srv/startinit.sh
+WORKDIR /srv/webvirtcloud
+
+ADD 01-wsproxy.patch /srv/webvirtcloud/01-wsproxy.patch
+
+RUN patch -p1 -u <01-wsproxy.patch && \
+    cp conf/nginx/webvirtcloud.conf /etc/nginx/conf.d && \
+    chown -R www-data:www-data /etc/nginx/conf.d/webvirtcloud.conf
+
+COPY startinit.sh /etc/my_init.d/startinit.sh

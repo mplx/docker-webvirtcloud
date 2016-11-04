@@ -19,10 +19,10 @@ docker pull mplx/docker-webvirtcloud
 ```
 
 ### docker cli
+
 ```bash    
 docker run -d \
     -p 80:80 \
-    -p 6080:6080 \
     -v /srv/webvirtcloud/data:/srv/webvirtcloud/data \
     -v /srv/webvirtcloud/ssh:/var/www/.ssh \
     --name webvirtcloud \
@@ -30,6 +30,7 @@ docker run -d \
 ```
 
 ### docker compose
+
 ```yml
 version: '2'
 services:
@@ -37,7 +38,6 @@ services:
     image: mplx/docker-webvirtcloud
     ports:
       - "80:80"
-      - "6080:6080"
     volumes:
       - /srv/webvirtcloud/data:/srv/webvirtcloud/data
       - /srv/webvirtcloud/ssh:/var/www/.ssh
@@ -56,4 +56,25 @@ If you don't care about strict host checking you might disable it by adding thes
 ```
 StrictHostKeyChecking=no
 UserKnownHostsFile=/dev/null 
+```
+
+## novncd `VNC_PORT`
+
+websocket connections for vnc/spice are proxied through nginx which defaults to port 80. If you require another port (i.e. you're using webvirtcloud behind a SSL proxy ) you'll have to set up the appropiate port (`docker run ... -e VNC_PORT 443 ...`).
+
+## Proxy
+
+webvirtcloud is fully operational behind a proxy.
+
+i.e. `jwilder/nginx-proxy` with `jrcs/letsencrypt-nginx-proxy-companion`:
+
+```bash
+...
+    environment:
+      - VNC_PORT=443
+      - VIRTUAL_HOST=webvirtcloud.domain.tld
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=webvirtcloud.domain.tld
+      - LETSENCRYPT_EMAIL=some@email.tld
+...
 ```
