@@ -60,7 +60,7 @@ UserKnownHostsFile=/dev/null
 
 ## novncd `VNC_PORT`
 
-websocket connections for vnc/spice are proxied through nginx which defaults to port 80. If you require another port (i.e. you're using webvirtcloud behind a SSL proxy ) you'll have to set up the appropiate port (`docker run ... -e VNC_PORT 443 ...`).
+websocket connections for vnc/spice are proxied through nginx which defaults to port 80. If you require another port (i.e. you're using webvirtcloud behind a SSL proxy ) you'll have to set up the appropiate port (`docker run ... -e VNC_PORT=443 ...`).
 
 ## Proxy
 
