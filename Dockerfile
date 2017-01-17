@@ -59,8 +59,10 @@ RUN curl -L -o $COMMITID.zip https://github.com/retspen/webvirtcloud/archive/$CO
 WORKDIR /srv/webvirtcloud
 
 ADD 01-wsproxy.patch /srv/webvirtcloud/01-wsproxy.patch
+ADD 02-forwardssl.patch /srv/webvirtcloud/02-forwardssl.patch
 
 RUN patch -p1 -u <01-wsproxy.patch && \
+    patch -p1 -u <02-forwardssl.patch && \
     cp conf/nginx/webvirtcloud.conf /etc/nginx/conf.d && \
     chown -R www-data:www-data /etc/nginx/conf.d/webvirtcloud.conf
 
