@@ -78,3 +78,13 @@ i.e. `jwilder/nginx-proxy` with `jrcs/letsencrypt-nginx-proxy-companion`:
       - LETSENCRYPT_EMAIL=some@email.tld
 ...
 ```
+
+## Contributing guidelines
+
+Contributions welcome! When submitting your first pull request please add your
+_author email_ (the one you use to make commits) to the [contributors](CONTRIBUTORS)
+file which contains a Contributor License Agreement (CLA).
+
+## License
+
+Licensed under [MIT License](LICENSE).
