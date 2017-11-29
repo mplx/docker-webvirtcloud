@@ -27,11 +27,7 @@ RUN apt-get update -qqy && \
 
 WORKDIR /srv
 
-# this is the version before the large PR#88
-# https://github.com/retspen/webvirtcloud/pull/88
-# if you feel it should be included in a stable release open an issue
-# https://github.com/mplx/docker-webvirtcloud/issues
-ENV COMMITID=b5f9f638f1966af089dbce76c1b9ce03149ae9ce
+ENV COMMITID=d94ca38e5c8b5bb1323d33067ee6b991775cc390
 
 RUN curl -L -o $COMMITID.zip https://github.com/retspen/webvirtcloud/archive/$COMMITID.zip && \
     unzip $COMMITID.zip && \
