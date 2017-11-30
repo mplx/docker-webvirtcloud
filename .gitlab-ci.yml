@@ -1,0 +1,66 @@
+before_script:
+  - apk add --no-cache --update bash ca-certificates curl openssl git
+  - /bin/bash -c 'echo $BASH_VERSION'
+  - mkdir -p build
+
+variables:
+  DOCKER_DIND_SERVICE: $CI_REGISTRY/docker/dind:latest
+  TEMP_IMAGE: ci-build/$CI_PROJECT_PATH:$CI_PIPELINE_ID
+  BUILD_PATH: build/
+  TEMP_IMAGE_LOCAL: $BUILD_PATH/wvc-image.tar
+  TEMP_IMAGE_LOCAL_COMPRESSED: $BUILD_PATH/wvc-image.tar.bz2
+
+.semver-tags-regex: &semver-tags-regex
+  - /^([0-9]+)\.([0-9]+)\.([0-9]+)$/
+
+stages:
+  - test
+  - release
+
+clatest:
+  stage: test
+  image: docker:latest
+  script:
+    - .ci/check_cla.sh
+  tags:
+    - docker-build
+
+containertest:
+  stage: test
+  image: docker:latest
+  services:
+    - name: $DOCKER_DIND_SERVICE
+      alias: docker
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - $TEMP_IMAGE_LOCAL_COMPRESSED
+  script:
+    - mkdir -p $BUILD_PATH
+    - .ci/build.sh
+    - .ci/check_container.sh $TEMP_IMAGE
+    - docker save --output $TEMP_IMAGE_LOCAL $TEMP_IMAGE
+    - nice -n 19 bzip2 -v -9 $TEMP_IMAGE_LOCAL
+    - ls -laih $TEMP_IMAGE_LOCAL_COMPRESSED
+  tags:
+    - docker-build
+
+release:
+  stage: release
+  image: docker:latest
+  services:
+    - name: $DOCKER_DIND_SERVICE
+      alias: docker
+  dependencies:
+    - containertest
+  script:
+    - ls -laih $BUILD_PATH
+    - nice -n 19 bzip2 -d $TEMP_IMAGE_LOCAL_COMPRESSED
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker load --input $TEMP_IMAGE_LOCAL --quiet
+    - docker tag $TEMP_IMAGE $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker tag $TEMP_IMAGE $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE
+  only: *semver-tags-regex
+  tags:
+    - docker-build

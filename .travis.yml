@@ -1,0 +1,14 @@
+language: go
+
+sudo: required
+
+services:
+  - docker
+
+install:
+  - docker --version
+
+script:
+  - .ci/check_cla.sh
+  - .ci/build.sh
+  - .ci/check_container.sh
