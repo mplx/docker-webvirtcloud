@@ -58,9 +58,13 @@ StrictHostKeyChecking=no
 UserKnownHostsFile=/dev/null 
 ```
 
+## public port `PUBLIC_PORT`
+
+nginx uses port 80 by default. If you require another port you can change this via `PUBLIC_PORT` (e.g. `docker run ... -e PUBLIC_PORT=443 ...`). Webvirtcloud uses `PUBLIC_PORT` for redirections (e.g. to login page) therefore it should be set when the web UI is accessed via a port other than 80 or 443. 
+
 ## novncd `VNC_PORT`
 
-websocket connections for vnc/spice are proxied through nginx which defaults to port 80. If you require another port (i.e. you're using webvirtcloud behind a SSL proxy ) you'll have to set up the appropiate port (`docker run ... -e VNC_PORT=443 ...`).
+websocket connections for vnc/spice are proxied through nginx which defaults to port 80 (or `PUBLIC_PORT` if set). If you require another port (i.e. you're using webvirtcloud behind a SSL proxy ) you'll have to set up the appropiate port (`docker run ... -e VNC_PORT=443 ...`).
 
 ## Proxy
 
