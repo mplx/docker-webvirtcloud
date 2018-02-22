@@ -16,6 +16,13 @@ echo "Your WebVirtCloud public key:"
 cat /var/www/.ssh/id_rsa.pub
 echo ""
 
+# set public port
+if [ -n "$PUBLIC_PORT" ]; then
+	sed -r -i "s/(\\s*listen )[0-9]+;/\\1${PUBLIC_PORT};/" /etc/nginx/conf.d/webvirtcloud.conf
+
+	[ -n "$VNC_PORT" ] || VNC_PORT=$PUBLIC_PORT
+fi
+
 # set vnc port
 if [ -n "$VNC_PORT" ]; then
 	sed -i "s/WS_PUBLIC_PORT = [0-9]\+/WS_PUBLIC_PORT = $VNC_PORT/" /srv/webvirtcloud/webvirtcloud/settings.py
