@@ -2,6 +2,14 @@
 
 retspen's WebVirtCloud is a web interface to kvm virtualization and can be found on [github](https://github.com/retspen/webvirtcloud)
 
+## docker hub version tag
+
+tag | description
+--- | -----------
+x.y.z | images matching git tags; semantic versioning
+latest | build with latest semver tag
+master | build from latest commit in master branch
+
 ## persistent data
 
 To get persistent data (database, ssh key) you need to mount container side directories `/srv/webvirtcloud/data` and `/var/www/.ssh` (i.e. `-v /srv/webvirtcloud/data:/srv/webvirtcloud/data`).
