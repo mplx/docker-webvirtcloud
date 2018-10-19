@@ -1,5 +1,5 @@
 # docker build -t mplx/webvirtcloud .
-FROM phusion/baseimage:0.9.22
+FROM phusion/baseimage:0.11
 
 LABEL maintainer="geki007"
 LABEL maintainer="mplx <mplx+docker@donotreply.at>"
