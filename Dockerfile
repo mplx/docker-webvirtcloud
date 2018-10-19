@@ -27,7 +27,7 @@ RUN apt-get update -qqy && \
 
 WORKDIR /srv
 
-ENV COMMITID=d94ca38e5c8b5bb1323d33067ee6b991775cc390
+ENV COMMITID=c231feb575a6d96caadd6cf10b0efe52792b0ae5
 
 RUN curl -L -o $COMMITID.zip https://github.com/retspen/webvirtcloud/archive/$COMMITID.zip && \
     unzip $COMMITID.zip && \
@@ -38,6 +38,7 @@ RUN curl -L -o $COMMITID.zip https://github.com/retspen/webvirtcloud/archive/$CO
     chown -R www-data:www-data /srv/webvirtcloud/ && \
     cd /srv/webvirtcloud/ && \
     mkdir data && \
+    cp webvirtcloud/settings.py.template webvirtcloud/settings.py && \
     sed -i "s|'db.sqlite3'|'data/db.sqlite3'|" webvirtcloud/settings.py && \
     virtualenv venv && \
     . venv/bin/activate && \
@@ -67,3 +68,4 @@ RUN patch -p1 -u <01-wsproxy.patch && \
     chown -R www-data:www-data /etc/nginx/conf.d/webvirtcloud.conf
 
 COPY startinit.sh /etc/my_init.d/startinit.sh
+
