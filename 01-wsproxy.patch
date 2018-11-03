@@ -1,18 +1,5 @@
-From ec39855977eaa9782cbde6b59c5c9cb74a8bb0ab Mon Sep 17 00:00:00 2001
-From: mplx <mplx+coding@donotreply.at>
-Date: Wed, 19 Oct 2016 17:58:40 +0200
-Subject: [PATCH] novnc: proxy websocket
-
----
- conf/nginx/webvirtcloud.conf         | 11 +++++++++++
- console/templates/console-spice.html |  4 ++--
- console/templates/console-vnc.html   |  1 +
- console/views.py                     |  5 ++++-
- webvirtcloud/settings.py             | 10 ++++++++--
- 5 files changed, 26 insertions(+), 5 deletions(-)
-
 diff --git a/conf/nginx/webvirtcloud.conf b/conf/nginx/webvirtcloud.conf
-index 70b8e0e..9aa1408 100644
+index 70b8e0e..2eae863 100644
 --- a/conf/nginx/webvirtcloud.conf
 +++ b/conf/nginx/webvirtcloud.conf
 @@ -20,4 +20,15 @@ server {
@@ -29,79 +16,110 @@ index 70b8e0e..9aa1408 100644
 +}
 +
 +upstream wsnovncd {
-+    server 127.0.0.1:6080;
++       server 127.0.0.1:6080;
  }
-diff --git a/console/templates/console-spice.html b/console/templates/console-spice.html
-index 1a1cbf8..655a0f0 100644
---- a/console/templates/console-spice.html
-+++ b/console/templates/console-spice.html
-@@ -182,9 +182,9 @@
- 
-     var uri;
-     if (window.location.protocol === "https:") {
--        uri = 'wss://{{ ws_host }}:{{ ws_port }}';
-+        uri = 'wss://{{ ws_host }}:{{ ws_port }}{{ ws_path }}';
-     } else {
--        uri = 'ws://{{ ws_host }}:{{ ws_port }}';
-+        uri = 'ws://{{ ws_host }}:{{ ws_port }}{{ ws_path }}';
-     }
- 
-     var password = '{{ console_passwd }}';
-diff --git a/console/templates/console-vnc.html b/console/templates/console-vnc.html
-index b0a3334..b0800cf 100644
---- a/console/templates/console-vnc.html
-+++ b/console/templates/console-vnc.html
-@@ -179,6 +179,7 @@
-         // By default, use the host and port of server that served this file
-         host = '{{ ws_host }}';
-         port = '{{ ws_port }}';
-+               path = '{{ ws_path }}';
-         password = '{{ console_passwd }}';
- 
-         if ((!host) || (!port)) {
+diff --git a/console/templates/console-spice-full.html b/console/templates/console-spice-full.html
+index 5accf4d..118f243 100644
+--- a/console/templates/console-spice-full.html
++++ b/console/templates/console-spice-full.html
+@@ -115,7 +115,7 @@
+                     sc.stop();
+                 }
+
+-                uri = scheme + host + ":" + port;
++                   uri = scheme + "{{ ws_host }}:{{ ws_port }}{{ ws_path }}";
+
+                 document.getElementById('connectButton').innerHTML = "Stop";
+                 document.getElementById('connectButton').onclick = disconnect;
+diff --git a/console/templates/console-spice-lite.html b/console/templates/console-spice-lite.html
+index 8f89678..f4968ad 100644
+--- a/console/templates/console-spice-lite.html
++++ b/console/templates/console-spice-lite.html
+@@ -153,7 +153,7 @@
+                     sc.stop();
+                 }
+
+-                uri = scheme + host + ":" + port;
++               uri = scheme + "{{ ws_host }}:{{ ws_port }}{{ ws_path }}";
+
+                 if (path) {
+                   uri += path[0] == '/' ? path : ('/' + path);
+diff --git a/console/templates/console-vnc-full.html b/console/templates/console-vnc-full.html
+index 6149289..ab30c62 100755
+--- a/console/templates/console-vnc-full.html
++++ b/console/templates/console-vnc-full.html
+@@ -241,7 +241,7 @@
+                                     </li>
+                                     <li>
+                                         <label for="noVNC_setting_path">Path:</label>
+-                                        <input id="noVNC_setting_path" type="input" value="websockify" />
++                                       <input id="noVNC_setting_path" type="input" value="{{ ws_path }}" />
+                                     </li>
+                                 </ul></div>
+                             </li>
+@@ -332,4 +332,4 @@
+         <source src="{% static "js/novnc/app/sounds/bell.oga" %}" type="audio/ogg">
+         <source src="{% static "js/novnc/app/sounds/bell.mp3" %}" type="audio/mpeg">
+     </audio>
+-{% endblock %}
+\ No newline at end of file
++{% endblock %}
+diff --git a/console/templates/console-vnc-lite.html b/console/templates/console-vnc-lite.html
+index 4dd7bfe..0cc011d 100755
+--- a/console/templates/console-vnc-lite.html
++++ b/console/templates/console-vnc-lite.html
+@@ -235,7 +235,7 @@
+         //var password = WebUtil.getConfigVar('password', '');
+         var password = '{{ console_passwd }}';
+
+-        var path = WebUtil.getConfigVar('path', 'websockify');
++       var path = WebUtil.getConfigVar('path', '{{ ws_path }}');
+
+         // If a token variable is passed in, set the parameter in a cookie.
+         // This is used by nova-novncproxy.
 diff --git a/console/views.py b/console/views.py
-index a123064..f48d1f1 100644
+index 4196ff0..cac6208 100644
 --- a/console/views.py
 +++ b/console/views.py
-@@ -5,6 +5,8 @@
- from instances.models import Instance
+@@ -7,6 +7,8 @@ from instances.models import Instance
  from vrtManager.instance import wvmInstance
  from webvirtcloud.settings import WS_PORT
-+from webvirtcloud.settings import WS_PUBLIC_PORT
-+from webvirtcloud.settings import WS_PUBLIC_PATH
  from webvirtcloud.settings import WS_PUBLIC_HOST
++from webvirtcloud.settings import WS_PUBLIC_PATH
++from webvirtcloud.settings import WS_PUBLIC_PORT
  from libvirt import libvirtError
- 
-@@ -39,8 +41,9 @@ def console(request):
+
+
+@@ -40,8 +42,9 @@ def console(request):
          console_websocket_port = None
          console_passwd = None
- 
+
 -    ws_port = console_websocket_port if console_websocket_port else WS_PORT
 +    ws_port = console_websocket_port if console_websocket_port else WS_PUBLIC_PORT
      ws_host = WS_PUBLIC_HOST if WS_PUBLIC_HOST else request.get_host()
 +    ws_path = WS_PUBLIC_PATH if WS_PUBLIC_PATH else '/'
- 
+
      if ':' in ws_host:
          ws_host = re.sub(':[0-9]+', '', ws_host)
-diff --git a/webvirtcloud/settings.py b/webvirtcloud/settings.py
-index a163fa3..adb0148 100644
+diff --git a/webvirtcloud/settings.py.template b/webvirtcloud/settings.py.template
+index 5e59e92..4b0368a 100644
 --- a/webvirtcloud/settings.py
 +++ b/webvirtcloud/settings.py
-@@ -76,15 +76,21 @@
- 
+@@ -97,15 +97,21 @@ TEMPLATES = [
+
  ## WebVirtCloud settings
- 
+
 -# Wobsock port
 +# Websock port
  WS_PORT = 6080
- 
+
  # Websock host
  WS_HOST = '0.0.0.0'
- 
+
 -# Websock public port
 +# Websock public host
  WS_PUBLIC_HOST = None
- 
+
 +# Websock public port
 +WS_PUBLIC_PORT = 80
 +
@@ -110,4 +128,4 @@ index a163fa3..adb0148 100644
 +
  # Websock SSL connection
  WS_CERT = None
- 
+
