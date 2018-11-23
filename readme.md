@@ -1,16 +1,16 @@
-# WebVirtCloud on docker
+# WebVirtCloud on Docker
 
-retspen's WebVirtCloud is a web interface to kvm virtualization and can be found on [github](https://github.com/retspen/webvirtcloud)
+retspen's WebVirtCloud is a web interface to Linux KVM virtualization and can be found on [github](https://github.com/retspen/webvirtcloud).
 
-## docker hub version tag
+## [Docker Hub](https://hub.docker.com/r/mplx/docker-webvirtcloud/) Version Tag
 
-tag | description
---- | -----------
-x.y.z | images matching git tags; semantic versioning
-latest | build with latest semver tag
-master | build from latest commit in master branch
+Tag                                                                           | Description
+----------------------------------------------------------------------------- | -----------
+[x.y.z](https://github.com/mplx/docker-webvirtcloud/blob/master/CHANGELOG.md) | images matching git tags; semantic versioning
+latest                                                                        | build with latest semver tag
+master                                                                        | build from latest commit in master branch
 
-## persistent data
+## Persistent Data
 
 To get persistent data (database, ssh key) you need to mount container side directories `/srv/webvirtcloud/data` and `/var/www/.ssh` (i.e. `-v /srv/webvirtcloud/data:/srv/webvirtcloud/data`).
 
@@ -18,12 +18,12 @@ To get persistent data (database, ssh key) you need to mount container side dire
 - an existing ssh key will be used otherwise one will be created (4096 bit RSA)
 - warning: do not mount your ~/.ssh as key source - permissions will be updated to container needs!
 
-## run container
+## Run Container
 
-### pull
+### pull/update
 
 ```bash
-docker pull mplx/docker-webvirtcloud
+docker pull mplx/docker-webvirtcloud:latest
 ```
 
 ### docker cli
@@ -51,9 +51,9 @@ services:
       - /srv/webvirtcloud/ssh:/var/www/.ssh
 ```
 
-## strict host checking
+## Strict Host Checking
 
-Before adding a kvm target system ("Computes" > "SSH Connection") you have to add the public key to the target system and establish a test connection so the host key is added to `known_hosts` file. Failing to do so will result in error `Host key verification failed`.
+Before adding a KVM target system ("Computes" > "SSH Connection") you have to add the public key to the target system and establish a test connection so the host key is added to `known_hosts` file. Failing to do so will result in error `Host key verification failed`.
 
 ```bash
 docker exec -i -t <container> /sbin/setuser www-data ssh <user>@<fqdn>
@@ -66,7 +66,7 @@ StrictHostKeyChecking=no
 UserKnownHostsFile=/dev/null 
 ```
 
-## public port `PUBLIC_PORT`
+## Public Port `PUBLIC_PORT`
 
 nginx uses port 80 by default. If you require another port you can change this via `PUBLIC_PORT` (e.g. `docker run ... -e PUBLIC_PORT=443 ...`). Webvirtcloud uses `PUBLIC_PORT` for redirections (e.g. to login page) therefore it should be set when the web UI is accessed via a port other than 80 or 443. 
 
@@ -91,11 +91,9 @@ i.e. `jwilder/nginx-proxy` with `jrcs/letsencrypt-nginx-proxy-companion`:
 ...
 ```
 
-## Contributing guidelines
+## Contributing Guidelines
 
-Contributions welcome! When submitting your first pull request please add your
-_author email_ (the one you use to make commits) to the [contributors](CONTRIBUTORS)
-file which contains a Contributor License Agreement (CLA).
+Contributions welcome! When submitting your first pull request please add your _author email_ (the one you use to make commits) to the [contributors](CONTRIBUTORS) file which contains a Contributor License Agreement (CLA).
 
 ## License
 
