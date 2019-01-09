@@ -14,14 +14,38 @@ variables:
   - /^([0-9]+)\.([0-9]+)\.([0-9]+)$/
 
 stages:
+  - contribution
+  - build
   - test
   - release
 
-clatest:
-  stage: test
+clacheck:
+  stage: contribution
   image: docker:latest
   script:
     - .ci/check_cla.sh
+  tags:
+    - docker-build
+
+containerbuild:
+  stage: build
+  image: docker:latest
+  services:
+    - name: $DOCKER_DIND_SERVICE
+      alias: docker
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - $TEMP_IMAGE_LOCAL_COMPRESSED
+  dependencies:
+    - clacheck
+  script:
+    - mkdir -p $BUILD_PATH
+    - .ci/build.sh
+    - .ci/check_container.sh $TEMP_IMAGE
+    - docker save --output $TEMP_IMAGE_LOCAL $TEMP_IMAGE
+    - nice -n 19 bzip2 -v -9 $TEMP_IMAGE_LOCAL
+    - ls -laih $TEMP_IMAGE_LOCAL_COMPRESSED
   tags:
     - docker-build
 
@@ -31,17 +55,10 @@ containertest:
   services:
     - name: $DOCKER_DIND_SERVICE
       alias: docker
-  artifacts:
-    expire_in: 1 hour
-    paths:
-      - $TEMP_IMAGE_LOCAL_COMPRESSED
+  dependencies:
+    - containerbuild
   script:
-    - mkdir -p $BUILD_PATH
-    - .ci/build.sh
-    - .ci/check_container.sh $TEMP_IMAGE
-    - docker save --output $TEMP_IMAGE_LOCAL $TEMP_IMAGE
-    - nice -n 19 bzip2 -v -9 $TEMP_IMAGE_LOCAL
-    - ls -laih $TEMP_IMAGE_LOCAL_COMPRESSED
+    - .ci/check_container.sh $TEMP_IMAGE $CI_JOB_TOKEN $CI_REGISTRY
   tags:
     - docker-build
 
@@ -64,3 +81,4 @@ release:
   only: *semver-tags-regex
   tags:
     - docker-build
+
