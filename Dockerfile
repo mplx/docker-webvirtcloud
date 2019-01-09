@@ -27,7 +27,7 @@ RUN apt-get update -qqy && \
 
 WORKDIR /srv
 
-ENV COMMITID=cd940c99e572a3533aafd1fcf87d428272a3cffc
+ENV COMMITID=4b9ae893241b4fe45f68722c8224e92120877a0c
 
 RUN curl -L -o $COMMITID.zip https://github.com/retspen/webvirtcloud/archive/$COMMITID.zip && \
     unzip $COMMITID.zip && \
@@ -68,4 +68,3 @@ RUN patch -p1 -u <01-wsproxy.patch && \
     chown -R www-data:www-data /etc/nginx/conf.d/webvirtcloud.conf
 
 COPY startinit.sh /etc/my_init.d/startinit.sh
-
