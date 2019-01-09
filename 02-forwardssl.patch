@@ -1,14 +1,3 @@
-From 4e4654ac0f1ca6c7016a88ee8f42e0638a9695e8 Mon Sep 17 00:00:00 2001
-From: mplx <mplx+coding@donotreply.at>
-Date: Tue, 17 Jan 2017 16:26:52 +0100
-Subject: [PATCH] disable X-Forwarded-Ssl
-
-jwilder/nginx-proxy@3d20c626c807402eef9f88787a6e13fc3e68f376 enables x-forwarding-ssl.
-this causes a protocol error (https://webvirtcloud:80/)
----
- webvirtcloud.conf | 1 +
- 1 file changed, 1 insertion(+)
-
 diff --git a/conf/nginx/webvirtcloud.conf b/conf/nginx/webvirtcloud.conf
 index 9aa1408..efcdf71 100644
 --- a/conf/nginx/webvirtcloud.conf
@@ -21,3 +10,4 @@ index 9aa1408..efcdf71 100644
          proxy_connect_timeout 600;
          proxy_read_timeout 600;
          proxy_send_timeout 600;
+
