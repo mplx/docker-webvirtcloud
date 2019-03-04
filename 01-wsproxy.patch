@@ -35,15 +35,15 @@ diff --git a/console/templates/console-spice-lite.html b/console/templates/conso
 index 8f89678..f4968ad 100644
 --- a/console/templates/console-spice-lite.html
 +++ b/console/templates/console-spice-lite.html
-@@ -153,7 +153,7 @@
-                     sc.stop();
-                 }
+@@ -142,7 +142,7 @@
+                 password = '{{ console_passwd | safe }}';
+                 if (password === 'None') password = '';
 
--                uri = scheme + host + ":" + port;
-+               uri = scheme + "{{ ws_host }}:{{ ws_port }}{{ ws_path }}";
+-                path = spice_query_var('path', 'websockify');
++                path = spice_query_var('path', '{{ ws_path }}');
 
-                 if (path) {
-                   uri += path[0] == '/' ? path : ('/' + path);
+                 if ((!host) || (!port)) {
+                     console.log("must specify host and port in URL");
 diff --git a/console/templates/console-vnc-full.html b/console/templates/console-vnc-full.html
 index 6149289..ab30c62 100755
 --- a/console/templates/console-vnc-full.html
@@ -68,15 +68,23 @@ diff --git a/console/templates/console-vnc-lite.html b/console/templates/console
 index 4dd7bfe..0cc011d 100755
 --- a/console/templates/console-vnc-lite.html
 +++ b/console/templates/console-vnc-lite.html
-@@ -235,7 +235,7 @@
+@@ -235,14 +235,14 @@
          //var password = WebUtil.getConfigVar('password', '');
          var password = '{{ console_passwd }}';
 
 -        var path = WebUtil.getConfigVar('path', 'websockify');
-+       var path = WebUtil.getConfigVar('path', '{{ ws_path }}');
++        var path = WebUtil.getConfigVar('path', '{{ ws_path }}');
 
          // If a token variable is passed in, set the parameter in a cookie.
          // This is used by nova-novncproxy.
+         var token = WebUtil.getConfigVar('token', null);
+         if (token) {
+             // if token is already present in the path we should use it
+-            path = WebUtil.injectParamIfMissing(path, "token", token);
++            path = path + WebUtil.injectParamIfMissing(path, "token", token);
+
+             WebUtil.createCookie('token', token, 1)
+         }
 diff --git a/console/views.py b/console/views.py
 index 4196ff0..cac6208 100644
 --- a/console/views.py
@@ -128,4 +136,3 @@ index 5e59e92..4b0368a 100644
 +
  # Websock SSL connection
  WS_CERT = None
-
