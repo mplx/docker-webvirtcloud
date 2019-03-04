@@ -34,6 +34,12 @@ if [ -n "$PUBLIC_PORT" ]; then
 	[ -n "$VNC_PORT" ] || VNC_PORT=$PUBLIC_PORT
 fi
 
+# set vnc host
+echo "Setting VNC external host..."
+if [ -n "$VNC_HOST" ]; then
+	sed -i "s/WS_PUBLIC_HOST = None/WS_PUBLIC_HOST = '$VNC_HOST'/" /srv/webvirtcloud/webvirtcloud/settings.py
+fi
+
 # set vnc port
 echo "Setting VNC port..."
 if [ -n "$VNC_PORT" ]; then
@@ -47,4 +53,3 @@ echo "Fixing ssh permissions..."
 chown -R www-data:www-data /var/www/.ssh/
 chmod 0700 /var/www/.ssh
 chmod 0600 /var/www/.ssh/*
-

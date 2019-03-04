@@ -63,16 +63,16 @@ If you don't care about strict host checking you might disable it by adding thes
 
 ```
 StrictHostKeyChecking=no
-UserKnownHostsFile=/dev/null 
+UserKnownHostsFile=/dev/null
 ```
 
 ## Public Port `PUBLIC_PORT`
 
-nginx uses port 80 by default. If you require another port you can change this via `PUBLIC_PORT` (e.g. `docker run ... -e PUBLIC_PORT=443 ...`). Webvirtcloud uses `PUBLIC_PORT` for redirections (e.g. to login page) therefore it should be set when the web UI is accessed via a port other than 80 or 443. 
+nginx uses port 80 by default. If you require another port you can change this via `PUBLIC_PORT` (e.g. `docker run ... -e PUBLIC_PORT=443 ...`). Webvirtcloud uses `PUBLIC_PORT` for redirections (e.g. to login page) therefore it should be set when the web UI is accessed via a port other than 80 or 443.
 
-## novncd `VNC_PORT`
+## novncd `VNC_HOST`, `VNC_PORT`
 
-websocket connections for vnc/spice are proxied through nginx which defaults to port 80 (or `PUBLIC_PORT` if set). If you require another port (i.e. you're using webvirtcloud behind a SSL proxy ) you'll have to set up the appropiate port (`docker run ... -e VNC_PORT=443 ...`).
+External websocket host (`VNC_HOST`) and/or port (`VNC_PORT`) to proxy websocket connects for vnc/spice. Port defaults to port 80 (or `PUBLIC_PORT` if set). If you require another host/port (i.e. you're using webvirtcloud behind a SSL proxy ) you'll have to set up the appropiate host and/or port (`docker run ... -e VNC_PORT=443 ...`).
 
 ## Proxy
 
@@ -83,6 +83,7 @@ i.e. `jwilder/nginx-proxy` with `jrcs/letsencrypt-nginx-proxy-companion`:
 ```bash
 ...
     environment:
+      - VNC_HOST=external-host.domain.tld
       - VNC_PORT=443
       - VIRTUAL_HOST=webvirtcloud.domain.tld
       - VIRTUAL_PORT=80
