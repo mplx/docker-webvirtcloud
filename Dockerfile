@@ -33,6 +33,7 @@ RUN curl -L -o $COMMITID.zip https://github.com/retspen/webvirtcloud/archive/$CO
     unzip $COMMITID.zip && \
     rm -f $COMMITID.zip && \
     mv webvirtcloud-$COMMITID webvirtcloud && \
+    rm -Rf webvirtcloud/doc/ webvirtcloud/Vagrantfile && \
     cp webvirtcloud/conf/supervisor/webvirtcloud.conf /etc/supervisor/conf.d && \
     cp webvirtcloud/conf/nginx/webvirtcloud.conf /etc/nginx/conf.d && \
     chown -R www-data:www-data /srv/webvirtcloud/ && \
@@ -65,6 +66,8 @@ ADD 02-forwardssl.patch /srv/webvirtcloud/02-forwardssl.patch
 RUN patch -p1 -u <01-wsproxy.patch && \
     patch -p1 -u <02-forwardssl.patch && \
     cp conf/nginx/webvirtcloud.conf /etc/nginx/conf.d && \
-    chown -R www-data:www-data /etc/nginx/conf.d/webvirtcloud.conf
+    chown -R www-data:www-data /etc/nginx/conf.d/webvirtcloud.conf && \
+    rm 01-wsproxy.patch && \
+    rm 02-forwardssl.patch
 
 COPY startinit.sh /etc/my_init.d/startinit.sh
