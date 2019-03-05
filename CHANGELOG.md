@@ -2,7 +2,11 @@
 
 ## [Master]
 
+## [0.8.0] (2019-03-06)
+
 - update upstream
+- add `VNC_HOST` to allow setting external host in proxy environments (thanks @Aphris-Karu)
+- fix `lite` vnc/spice consoles
 
 ## [0.7.0] (2018-11-23)
 
